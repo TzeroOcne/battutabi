@@ -1,5 +1,8 @@
 @import 'tailwindcss';
-@plugin 'daisyui';
+@plugin 'daisyui' {
+  themes: false;
+};
+@plugin './themes/catppuccinTheme.macchiato.ts';
 @import './base.css';
 
 body {
