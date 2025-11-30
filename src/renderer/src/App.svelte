@@ -1,18 +1,15 @@
 <script lang="ts">
-  import electronLogo from './assets/electron.svg'
+  let url = $state('https://electron-vite.org');
+
+  function loadBase(newUrl: string): void {
+    console.log('Loading URL:', newUrl);
+    window.electron.ipcRenderer.send('load-url', newUrl);
+  }
+
+  const load = (): void => loadBase(url);
 </script>
 
-<img alt="logo" class="logo" src={electronLogo} />
-<div class="creator">Powered by electron-vite</div>
-<div class="text">
-  Build an Electron app with
-  <span class="svelte">Svelte</span>
-  and
-  <span class="ts">TypeScript</span>
-</div>
-<p class="tip">Please try pressing <code>F12</code> to open the devTool</p>
-<div class="actions">
-  <button class="btn btn-primary">
-    Click Me
-  </button>
+<div class="h-8 flex *:h-full gap-2 mx-2">
+  <input type="text" class="input w-full" bind:value={url}>
+  <button class="btn btn-primary" onclick={load}>Load</button>
 </div>
