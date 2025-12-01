@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { loadUrl } from './tabs'
+import type { LoadOptions } from '../types/tabs';
 
 function createWindow(): void {
   // Create the browser window.
@@ -20,6 +21,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    mainWindow.webContents.send('init');
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -55,8 +57,8 @@ app.whenReady().then(() => {
 
   createWindow()
 
-  ipcMain.on('load-url', (_, newUrl) => {
-    loadUrl(newUrl);
+  ipcMain.on('load-url', (_, id, options: LoadOptions) => {
+    loadUrl(id, options);
   });
 
   app.on('activate', function () {
