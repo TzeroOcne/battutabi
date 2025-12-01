@@ -24,12 +24,17 @@ export function loadUrl(id: string, options: LoadOptions): void {
     const view = new WebContentsView();
     win.contentView.addChildView(view);
     resizeView(win, view);
+
     view.webContents.on('page-title-updated', (_, title) => {
       win.webContents.send('page-title-updated', { id, title });
     });
     view.webContents.on('will-navigate', ({ url }) => {
       win.webContents.send('will-navigate', { id, url });
     });
+    view.webContents.on('did-start-navigation', ({ url }) => {
+      win.webContents.send('did-start-navigation', { id, url });
+    });
+
     win.on('resize', () => {
       resizeView(win, view);
     });

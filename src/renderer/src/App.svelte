@@ -52,6 +52,9 @@
   window.electron.ipcRenderer.on('will-navigate', (_, { id, url }) => {
     getTabById(id).url = url;
   });
+  window.electron.ipcRenderer.on('did-start-navigation', (_, { id, url }) => {
+    getTabById(id).url = url;
+  });
 
   const debounceActivate = debounce(activateTab, 0);
 
