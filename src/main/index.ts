@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { loadUrl } from './tabs'
+import { loadTab, removeTabById } from './tabs'
 import type { LoadOptions } from '../types/tabs';
 
 function createWindow(): void {
@@ -57,8 +57,11 @@ app.whenReady().then(() => {
 
   createWindow()
 
-  ipcMain.on('load-url', (_, id, options: LoadOptions) => {
-    loadUrl(id, options);
+  ipcMain.on('load-tab', (_, id, options: LoadOptions) => {
+    loadTab(id, options);
+  });
+  ipcMain.on('close-tab', (_, id) => {
+    removeTabById(id);
   });
 
   app.on('activate', function () {

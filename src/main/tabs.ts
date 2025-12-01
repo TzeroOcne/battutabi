@@ -14,7 +14,7 @@ function resizeView(win: BrowserWindow, view: WebContentsView): void {
   });
 }
 
-export function loadUrl(id: string, options: LoadOptions): void {
+export function loadTab(id: string, options: LoadOptions): void {
   const win = BrowserWindow.getFocusedWindow();
   if (!win) {
     return;
@@ -52,4 +52,16 @@ export function loadUrl(id: string, options: LoadOptions): void {
     view.webContents.loadURL(url);
   }
   latestTab = view;
+}
+
+export function removeTabById(id: string): void {
+  const win = BrowserWindow.getFocusedWindow();
+  if (!win) {
+    return;
+  }
+  if (!tabs[id]) return;
+  const tab = tabs[id];
+  delete tabs[id];
+  win.contentView.removeChildView(tab);
+  tab.webContents.close();
 }
