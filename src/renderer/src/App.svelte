@@ -2,8 +2,8 @@
   import { untrack } from "svelte"
   import Cross from 'virtual:icons/maki/cross'
   import AddBold from 'virtual:icons/mdi/add-bold'
-  import type { LoadOptions, Tab } from '../../types/tabs'
-  import { clamp } from '../../util'
+  import type { LoadOptions, Tab } from '@/types/tabs';
+  import { clamp } from '@/util';
   import { randomUUID } from "./util"
 
   let tabList = $state<Tab[]>([
