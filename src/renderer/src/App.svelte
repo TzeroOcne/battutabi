@@ -1,12 +1,13 @@
 <script lang="ts">
+  import type { LoadOptions, Tab } from '@/types/tabs'
+  import { clamp } from '@/util'
   import { untrack } from "svelte"
   import Cross from 'virtual:icons/maki/cross'
   import AddBold from 'virtual:icons/mdi/add-bold'
-  import type { LoadOptions, Tab } from '@/types/tabs';
-  import { clamp } from '@/util';
   import { randomUUID } from "./util"
+  import { send, on } from './util/ipc';
 
-  let tabList = $state<Tab[]>([
+  const initTabList:Tab[] = [
     {
       id: randomUUID(),
       url: 'https://electron-vite.org',
@@ -17,7 +18,15 @@
       url: 'https://google.com',
       title: '',
     },
-  ]);
+  ];
+  let tabList = $state<Tab[]>([]);
+  on('open-new-tab', (_, newTab: Tab) => {
+    tabList = [
+      ...tabList,
+      newTab,
+    ];
+    tabIdx = tabList.length - 1;
+  });
 
   let tabIdx = $state(0);
 
@@ -34,16 +43,21 @@
     });
   }
 
-  function loadUrl({ id, url }: Tab): void {
-    const payload: LoadOptions = {
-      url,
-    };
+  function loadTab(tab: Tab): void {
+    const { id } = tab;
+    const payload: LoadOptions = {};
+    if ('url' in tab) {
+      payload.url = tab.url;
+    }
+    if ('file' in tab) {
+      payload.file = tab.file;
+    }
     window.electron.ipcRenderer.send('load-tab', id, payload);
   }
 
   window.electron.ipcRenderer.once('init', () => {
-    tabList.forEach((data) => {
-      loadUrl(data);
+    initTabList.forEach((data) => {
+      loadTab(data);
     });
     activateTab(tabIdx);
   });
@@ -72,12 +86,7 @@
       url: 'https://google.com',
       title: '',
     };
-    loadUrl(newTab);
-    tabList = [
-      ...tabList,
-      newTab,
-    ];
-    tabIdx = tabList.length - 1;
+    loadTab(newTab);
   }
 
   function removeTabByIdx(idx: number): void {
@@ -93,6 +102,10 @@
     {#each tabList as tab, idx (tab.id)}
       <label class="tab min-w-58 max-w-48 w-48 whitespace-nowrap justify-start overflow-clip">
         <input
+          oncontextmenu={() => {
+            send('contextmenu', { idx });
+          }}
+          id="tab-title"
           bind:group={tabIdx}
           type="radio"
           name="browser-tab"
@@ -122,6 +135,6 @@
     {:else}
       <input type="text" class="input w-full">
     {/if}
-    <button class="btn btn-primary" onclick={() => loadUrl(tabList[tabIdx])}>Load</button>
+    <button class="btn btn-primary" onclick={() => loadTab(tabList[tabIdx])}>Load</button>
   </div>
 </div>

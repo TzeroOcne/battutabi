@@ -1,5 +1,6 @@
-import { BrowserWindow, WebContentsView } from "electron";
-import { LoadOptions } from "../types/tabs";
+import { BrowserWindow, ipcMain, WebContentsView } from "electron";
+import { ContextMenuParams } from "../types/event";
+import { LoadOptions, Tab } from "../types/tabs";
 
 const tabs: Record<string, WebContentsView> = {};
 let latestTab:WebContentsView|null = null;
@@ -19,9 +20,19 @@ export function loadTab(id: string, options: LoadOptions): void {
   if (!win) {
     return;
   }
-  const { url, visible } = options;
+  const { url, file, visible } = options;
   if (!tabs[id]) {
     const view = new WebContentsView();
+    win.webContents.send(
+      'open-new-tab',
+      {
+        id,
+        title: '',
+        url,
+        file,
+      } satisfies Tab,
+    );
+
     win.contentView.addChildView(view);
     resizeView(win, view);
 
@@ -34,6 +45,17 @@ export function loadTab(id: string, options: LoadOptions): void {
     view.webContents.on('did-start-navigation', ({ url }) => {
       win.webContents.send('did-start-navigation', { id, url });
     });
+    view.webContents.on('context-menu', (_, params) => {
+      ipcMain.emit(
+        'contextmenu',
+        undefined,
+        {
+          type: 'CONTENT',
+          tabId: id,
+          linkUrl: params.linkURL,
+        } satisfies ContextMenuParams,
+      );
+    })
 
     win.on('resize', () => {
       resizeView(win, view);
@@ -50,6 +72,9 @@ export function loadTab(id: string, options: LoadOptions): void {
   }
   if (url) {
     view.webContents.loadURL(url);
+  }
+  if (file) {
+    view.webContents.loadFile(file);
   }
   latestTab = view;
 }
