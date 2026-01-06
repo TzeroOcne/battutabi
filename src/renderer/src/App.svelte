@@ -91,9 +91,8 @@
     const { id } = tabList[idx];
     tabList = tabList.filter((_, i) => i !== idx);
     window.electron.ipcRenderer.send('close-tab', id);
-    tabIdx = clamp(idx - 1, 0, tabList.length - 1);
-    if (tabList.length > 0) {
-      activateTab(tabIdx);
+    if (tabIdx >= idx && tabList.length > 0) {
+      tabIdx = clamp(idx - 1, 0, tabList.length - 1);
     }
   }
 </script>
