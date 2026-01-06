@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { LoadOptions, Tab } from '@/types/tabs'
+  import type { LoadOptions, OpenNewTabOptions, Tab } from '@/types/tabs'
   import { clamp } from '@/util'
   import { untrack } from "svelte"
   import Cross from 'virtual:icons/maki/cross'
@@ -13,19 +13,17 @@
       url: 'https://electron-vite.org',
       title: '',
     },
-    {
-      id: randomUUID(),
-      url: 'https://google.com',
-      title: '',
-    },
   ];
   let tabList = $state<Tab[]>([]);
-  on('open-new-tab', (_, newTab: Tab) => {
+  on('open-new-tab', (_, newTab: Tab, options: OpenNewTabOptions) => {
     tabList = [
       ...tabList,
       newTab,
     ];
-    tabIdx = tabList.length - 1;
+    const { focusNewTab } = options;
+    if (focusNewTab) {
+      tabIdx = tabList.length - 1;
+    }
   });
 
   let tabIdx = $state(0);
@@ -94,6 +92,9 @@
     tabList = tabList.filter((_, i) => i !== idx);
     window.electron.ipcRenderer.send('close-tab', id);
     tabIdx = clamp(idx - 1, 0, tabList.length - 1);
+    if (tabList.length > 0) {
+      activateTab(tabIdx);
+    }
   }
 </script>
 

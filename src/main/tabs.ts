@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain, WebContentsView } from "electron";
 import { ContextMenuParams } from "../types/event";
-import { LoadOptions, Tab } from "../types/tabs";
+import { LoadOptions, OpenNewTabOptions, Tab } from "../types/tabs";
 
 const tabs: Record<string, WebContentsView> = {};
 let latestTab:WebContentsView|null = null;
@@ -31,6 +31,9 @@ export function loadTab(id: string, options: LoadOptions): void {
         url,
         file,
       } satisfies Tab,
+      {
+        focusNewTab: visible,
+      } satisfies OpenNewTabOptions,
     );
 
     win.contentView.addChildView(view);
@@ -64,7 +67,7 @@ export function loadTab(id: string, options: LoadOptions): void {
     tabs[id] = view;
   }
   const view = tabs[id];
-  if (latestTab && view !== latestTab) {
+  if (visible && latestTab && view !== latestTab) {
     latestTab.setVisible(false);
   }
   if (visible !== undefined) {

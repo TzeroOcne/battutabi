@@ -14,11 +14,6 @@ export const ContextMenuManager = {
     this.menu.popup(options);
   },
 
-  init() {
-    this.append(this.openLink);
-    this.append(this.openLinkInNewTab);
-  },
-
   clickLink(tabId: string, linkUrl: string) {
     this.targetUrl = linkUrl;
     this.targetTabId = tabId;
@@ -51,6 +46,23 @@ export const ContextMenuManager = {
       ContextMenuManager.actionClicked();
     },
   }),
+  openLinkInBackgroundTab: new MenuItem({
+    label: "Open Link in Background Tab",
+    click: () => {
+      const { targetUrl } = ContextMenuManager;
+      if (!targetUrl) {
+        throw new Error("No target url");
+      }
+      loadTab(randomUUID(), { url: targetUrl, visible: false });
+      ContextMenuManager.actionClicked();
+    },
+  }),
+
+  init() {
+    this.append(this.openLink);
+    this.append(this.openLinkInNewTab);
+    this.append(this.openLinkInBackgroundTab);
+  },
 };
 
 ContextMenuManager.init();

@@ -10,3 +10,7 @@ export type LoadOptions = {
   file?: string,
   visible?: boolean,
 };
+
+export type OpenNewTabOptions = {
+  focusNewTab?: boolean,
+};
