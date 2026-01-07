@@ -1,5 +1,5 @@
 import { Menu, MenuItem } from "electron";
-import { loadTab } from "./tabs";
+import { getTabById, loadTab } from "./tabs";
 import { randomUUID } from "node:crypto";
 
 export const ContextMenuManager = {
@@ -24,6 +24,7 @@ export const ContextMenuManager = {
     this.targetUrl = null;
   },
 
+  separator: new MenuItem({ type: "separator" }),
   openLink: new MenuItem({
     label: "Open Link",
     click: () => {
@@ -57,11 +58,24 @@ export const ContextMenuManager = {
       ContextMenuManager.actionClicked();
     },
   }),
+  openDevTools: new MenuItem({
+    label: "Open DevTools",
+    click: () => {
+      const { targetTabId } = ContextMenuManager;
+      if (!targetTabId) {
+        throw new Error("No target tab");
+      }
+      getTabById(targetTabId).webContents.openDevTools();
+      ContextMenuManager.actionClicked();
+    },
+  }),
 
   init() {
     this.append(this.openLink);
     this.append(this.openLinkInNewTab);
     this.append(this.openLinkInBackgroundTab);
+    this.append(this.separator);
+    this.append(this.openDevTools);
   },
 };
 

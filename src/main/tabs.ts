@@ -58,7 +58,7 @@ export function loadTab(id: string, options: LoadOptions): void {
           linkUrl: params.linkURL,
         } satisfies ContextMenuParams,
       );
-    })
+    });
 
     win.on('resize', () => {
       resizeView(win, view);
@@ -80,6 +80,13 @@ export function loadTab(id: string, options: LoadOptions): void {
     view.webContents.loadFile(file);
   }
   latestTab = view;
+}
+
+export function getTabById(id: string): WebContentsView {
+  if (!(id in tabs)) {
+    throw new Error(`Tab with id ${id} does not exist`);
+  }
+  return tabs[id];
 }
 
 export function removeTabById(id: string): void {
