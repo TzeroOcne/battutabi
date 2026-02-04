@@ -1,0 +1,40 @@
+{
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": true,
+
+    /* SvelteKit / Vite */
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+
+    /* Paths */
+    "baseUrl": ".",
+
+    /* Interop */
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+
+    /* Strict but sane */
+    "strict": true,
+    "skipLibCheck": true,
+
+    "paths": {
+      "@/*": ["./src/*"],
+    }
+  },
+  "include": [
+    "src/pages/**/*.ts",
+    "src/pages/**/*.svelte",
+    "src/pages/**/*.mts",
+    "src/pages/**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "out",
+    "build"
+  ]
+}
+
