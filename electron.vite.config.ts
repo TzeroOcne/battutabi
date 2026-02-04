@@ -12,20 +12,14 @@ const resolve:UserConfig['resolve'] = {
   },
 };
 
-const assetsInclude: UserConfig['assetsInclude'] = [
-  '**/*.html',
-];
-
 export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
     resolve,
-    assetsInclude,
   },
   preload: {
     plugins: [externalizeDepsPlugin()],
     resolve,
-    assetsInclude,
   },
   renderer: {
     plugins: [
@@ -36,6 +30,5 @@ export default defineConfig({
       }),
     ],
     resolve,
-    assetsInclude,
   }
 });
